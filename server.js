@@ -3,9 +3,29 @@ const PORT        = process.env.PORT || 3333;
 const app         = express();
 const morgan      = require("morgan");
 const bodyParser  = require("body-parser");
+const mongoose    = require("mongoose");
 
 const productRoutes   = require("./api/routes/products.js");
 const orderRoutes     = require("./api/routes/orders.js");
+
+mongoose.connect(
+  `mongodb+srv://dbadmin:${process.env.DB_password}@node-rest-shop-9hzla.mongodb.net/test?retryWrites=true&w=majority`,
+  {
+    // useMongoClient: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }
+);
+
+// const MongoClient = require('mongodb').MongoClient;
+// const uri = "mongodb+srv://dbadmin:<password>@node-rest-shop-9hzla.mongodb.net/test?retryWrites=true&w=majority";
+// const client = new MongoClient(uri, { useNewUrlParser: true });
+// client.connect(err => {
+//   const collection = client.db("test").collection("devices");
+//   // perform actions on the collection object
+//   client.close();
+// });
+
 
 
 // it logs the actions on the screen
@@ -17,11 +37,6 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 app.use(bodyParser.json());
-
-app.use((re, res, next) => {
-  console.log("KKKKKKKKKKKKKKKKKKKKK");
-  next();
-});
 
 
 // settings related to CORS

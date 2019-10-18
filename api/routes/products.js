@@ -1,21 +1,37 @@
-const express = require("express");
-const router = express.Router();
+const express   = require("express");
+const router    = express.Router();
+
+const mongoose  = require("mongoose");
+const Product   = require("../models/product.js");
 
 // list of all products
-router.get("/", (req, res) => {
-  console.log("# products/GET ", new Date());
-  res.send("GET /products");
+router.get("/", async (req, res) => {
+  try {
+    const allProducts = await Product.find({});
+    return res.json(allProducts);
+  } catch (error) {
+    console.trace("error => ", error.message);
+    return res.send(error.message);
+  }
 });
 
 
 // creation product function
-router.post("/", (req, res) => {
-  const product = {
-    name  : req.body.name,
-    price : req.body.price
-  };
+router.post("/", async (req, res) => {
+  const product = new Product({
+    _id: new mongoose.Types.ObjectId(),
+    name: req.body.name,
+    price: Number(req.body.price)
+  });
 
-  res.status(201).send(`Product ${product.name}, $${product.price}, has been created`);
+  try {
+    const addProduct = await product.save();
+    console.log("addProduct => ", addProduct);
+    return res.status(201).send(`Product ${product.name}, $${product.price}, has been created`);
+  } catch (error) {
+    console.trace(error.message);
+    return res.status(300).send("Something wrong happend");
+  }
 });
 
 
