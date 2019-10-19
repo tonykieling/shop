@@ -5,13 +5,13 @@ const mongoose  = require("mongoose");
 const Product   = require("../models/product.js");
 
 // list of all products
-router.get("/", async (req, res) => {
+router.get("/all", async (req, res) => {
   try {
-    const allProducts = await Product.find({});
-    return res.json(allProducts);
+    const allProducts = await Product.find();
+    return res.json({"count": allProducts.length, allProducts});
   } catch (error) {
-    console.trace("error => ", error.message);
-    return res.send(error.message);
+    console.trace("Error => ", err.message);
+    return res.status(500).send(error.message);
   }
 });
 
@@ -26,42 +26,74 @@ router.post("/", async (req, res) => {
 
   try {
     const addProduct = await product.save();
-    console.log("addProduct => ", addProduct);
-    return res.status(201).send(`Product ${product.name}, $${product.price}, has been created`);
+    return res.status(201).json(addProduct);
   } catch (error) {
-    console.trace(error.message);
-    return res.status(300).send("Something wrong happend");
+    console.trace("Error => ", err.message);
+    return res.status(500).send("Something wrong happend");
   }
 });
 
 
 // it returns info about a specific product
-router.get("/:productID", (req, res) => {
-  console.log(`# products/GET :productId`);
-  const id = Number(req.params.productID);
+router.get("/:productID", async (req, res) => {
+  const id = req.params.productID;
 
-  if (isNaN(id))
-    res.send("Please, only numbers");
-  else
-    res.json({
-      message: `productID is ${id}`
+  try {
+    const productInfo = await Product.findById(id);
+    res.status(200).json(productInfo);
+  } catch (err) {
+    console.trace("Error => ", err.message);
+    res.status(500).json({
+      msg: "Invalid id"
     });
+  }
+
 });
 
 
-// it updatess a specific product
-router.patch("/:productID", (req, res) => {
-  console.log(`# products/PATCH :productId`);
-  const id = Number(req.params.productID);
-  res.send(`Product ${id} has been updated`);
+// it changes a specific product
+router.patch("/:productID", async (req, res) => {
+  const id = req.params.productID;
+
+  try {
+    const result = await Product.updateOne({
+       _id: id
+      }, {
+        $set: {
+          name: req.body.name,
+          price: req.body.price
+        }
+      });
+    
+    if (result.nModified) {
+      const newProduct = await Product.find({_id: id})
+      return res.json(newProduct);
+    } else
+      res.json({msg: `Product ${id} has NOT been updated`});
+  } catch (err) {
+    console.trace("Error => ", err.message);
+    res.json({msg: "Error Update"});
+  }
 });
 
 
 // it deletes a specific product
-router.delete("/:productID", (req, res) => {
-  console.log(`# products/DELETE :productId`);
-  const id = Number(req.params.productID);
-  res.send(`Product ${id} has been deleted`);
+router.delete("/:productId", async (req, res) => {
+  const id = req.params.productId;
+  
+  try {
+    const result = await Product.deleteOne({_id: id});
+
+    if (result.deletedCount)
+      return res.status(200).json({message: `Product ${id} has been deleted`});
+    else
+      return res.json({message: `Product ${id} has already been deleted`});
+  } catch (err) {
+    console.trace("Error => ", err.message);
+    res.status(404).json({
+      msg: `Something bad with id - ${id}`
+    })
+  }
 });
 
 module.exports = router;
