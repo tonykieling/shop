@@ -7,11 +7,14 @@ const Product   = require("../models/product.js");
 // list of all products
 router.get("/all", async (req, res) => {
   try {
-    const allProducts = await Product.find();
-    return res.json({"count": allProducts.length, allProducts});
+    const allProducts = await Product
+      .find()
+      .select("_id name price");
+
+    res.json({"count": allProducts.length, allProducts});
   } catch (error) {
     console.trace("Error => ", err.message);
-    return res.status(500).send(error.message);
+    res.status(500).send(error.message);
   }
 });
 
@@ -21,15 +24,15 @@ router.post("/", async (req, res) => {
   const product = new Product({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
-    price: Number(req.body.price)
+    price: req.body.price
   });
 
   try {
     const addProduct = await product.save();
-    return res.status(201).json(addProduct);
-  } catch (error) {
+    res.status(201).json(addProduct);
+  } catch (err) {
     console.trace("Error => ", err.message);
-    return res.status(500).send("Something wrong happend");
+    res.status(500).send("Something wrong happend");
   }
 });
 
@@ -39,7 +42,10 @@ router.get("/:productID", async (req, res) => {
   const id = req.params.productID;
 
   try {
-    const productInfo = await Product.findById(id);
+    const productInfo = await Product
+      .findById(id)
+      .select("_id name price");
+
     res.status(200).json(productInfo);
   } catch (err) {
     console.trace("Error => ", err.message);
