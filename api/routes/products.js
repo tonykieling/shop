@@ -14,7 +14,9 @@ router.get("/all", async (req, res) => {
     res.json({"count": allProducts.length, allProducts});
   } catch (error) {
     console.trace("Error => ", err.message);
-    res.status(500).send(error.message);
+    res.status(500).json({ 
+      error: error.message 
+    });
   }
 });
 
@@ -32,7 +34,9 @@ router.post("/", async (req, res) => {
     res.status(201).json(addProduct);
   } catch (err) {
     console.trace("Error => ", err.message);
-    res.status(500).send("Something wrong happend");
+    res.status(500).json({ 
+      error: "Something wrong happend" 
+    });
   }
 });
 
@@ -50,7 +54,7 @@ router.get("/:productID", async (req, res) => {
   } catch (err) {
     console.trace("Error => ", err.message);
     res.status(500).json({
-      msg: "Invalid id"
+      error: "Invalid id"
     });
   }
 
@@ -72,13 +76,20 @@ router.patch("/:productID", async (req, res) => {
       });
     
     if (result.nModified) {
-      const newProduct = await Product.find({_id: id})
+      const newProduct = await Product
+        .find({_id: id})
+        .select(" _id name price");
+
       return res.json(newProduct);
     } else
-      res.json({msg: `Product ${id} has NOT been updated`});
+      res.json({
+        error: `Product ${id} has NOT been updated`
+      });
   } catch (err) {
     console.trace("Error => ", err.message);
-    res.json({msg: "Error Update"});
+    res.json({
+      error: "Error Update"
+    });
   }
 });
 
@@ -91,13 +102,17 @@ router.delete("/:productId", async (req, res) => {
     const result = await Product.deleteOne({_id: id});
 
     if (result.deletedCount)
-      return res.status(200).json({message: `Product ${id} has been deleted`});
+      return res.status(200).json({
+        message: `Product ${id} has been deleted`
+      });
     else
-      return res.json({message: `Product ${id} has already been deleted`});
+      return res.json({
+        message: `Product ${id} has already been deleted`
+      });
   } catch (err) {
     console.trace("Error => ", err.message);
     res.status(404).json({
-      msg: `Something bad with id - ${id}`
+      error: `Something bad with id - ${id}`
     })
   }
 });
