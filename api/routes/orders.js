@@ -1,38 +1,62 @@
-const express = require("express");
-const router = express.Router();
+const express   = require("express");
+const router    = express.Router();
 
-// list of all products
-router.get("/", (req, res, next) => {
-  console.log("# orders/GET ", new Date());
-  res.send("GET /orders");
-});
+const mongoose  = require("mongoose");
+const Order     = require("../models/order.js");
 
 
 // creation order function
-router.post("/", (req, res, next) => {
-  const order = {
-    productId: req.body.productId,
-    quantd: req.body.qtd
-  };
+router.post("/", async (req, res) => {
+  try {
+    const order = new Order ({
+      _id: mongoose.Types.ObjectId(),
+      productId: req.body.productId,
+      quantity: req.body.quantity
+    });
+    
+    await order.save();
 
-  res.status(201).json({
-    message: "Order created",
-    order
-  });
+    res.status(201).json({
+      message: "Order created",
+      order
+    });
+  } catch (err) {
+    console.trace("Error => ", err.message);
+    res.status(500).json({ msg: "Something bad"});
+  }
+});
+
+
+// it returns info about all orders
+router.get("/", async (req, res) => {
+  try {
+      const order = await Order
+        .find()
+        .select("_id productId quantity");
+      
+      res.status(200).json({ Count: order.length, order});
+  } catch (err) {
+    console.trace("Error => ", err.message);
+    res.status(500).json({ msg: "Something bad"});
+  }
 });
 
 
 // it returns info about a specific order
-router.get("/:orderID", (req, res) => {
-  console.log(`# orders/GET :orderId`);
-  const id = Number(req.params.orderID);
+router.get("/:orderID", async (req, res) => {
+  const id = req.params.orderID;
 
-  if (isNaN(id))
-    res.send("Please, only numbers");
-  else
-    res.json({
-      message: `orderID is ${id}`
-    });
+  try {
+    const order = await Order
+      .find({ _id: id})
+      .select(" _id productId quantity");
+    
+    console.log("order: ", order);
+    res.json(order);
+  } catch (err) {
+    console.trace("Error => ", err.message);
+    res.status(500).json({ msg: "Something bad!!"});
+  }
 });
 
 
