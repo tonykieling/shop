@@ -3,15 +3,67 @@ const router    = express.Router();
 
 const mongoose  = require("mongoose");
 const Order     = require("../models/order.js");
+const Product   = require("../models/product.js");
+
+// it returns info about all orders
+router.get("/", async (req, res) => {
+  try {
+    mongoose.set('debug', true);
+    const docs = await Order
+      .find()
+      .select('_id productId quantity')
+      .populate('product', 'name');
+
+    
+    res.status(200).json({ 
+      Count   : docs.length,
+      orders  : docs.map(doc => {
+        return({
+          OrderId   : doc._id,
+          ProductId : doc.productId,
+          Qtd       : doc.quantity,
+          request   : {
+            type  : "GET",
+            url   : `http://localhost:3333/orders/${doc._id}`
+          }
+        });
+      })
+    });
+  } catch (err) {
+    console.trace("Error => ", err.message);
+    res.status(500).json({
+      error: "Something bad"
+    });
+  }
+});
 
 
 // creation order function
 router.post("/", async (req, res) => {
+  const productId = req.body.productId;
+  const quantity  = req.body.quantity;
+
+  //before save an order, need to check if the product ordered exists
+  try {
+    const product = await Product
+      .find({_id : productId});
+
+    if (product.length < 1)
+      return res.json({
+        error: "Product is invalid"
+      })
+  } catch (err) {
+    console.trace("Error => ", err.message);
+    return res.status(500).json({ 
+      error: "Something VERY bad"
+    });
+  }
+
   try {
     const order = new Order ({
       _id: mongoose.Types.ObjectId(),
-      productId: req.body.productId,
-      quantity: req.body.quantity
+      productId,
+      quantity
     });
     
     await order.save();
@@ -29,43 +81,15 @@ router.post("/", async (req, res) => {
 });
 
 
-// it returns info about all orders
-router.get("/", async (req, res) => {
-  try {
-      const docs = await Order
-        .find()
-        .select("_id productId quantity");
-      
-      res.status(200).json({ 
-        Count   : docs.length,
-        orders  : docs.map(doc => {
-          return({
-            OrderId   : doc._id,
-            ProductId : doc.productId,
-            Qtd       : doc.quantity,
-            request   : {
-              type  : "GET",
-              url   : `http://localhost:3333/orders/${doc._id}`
-            }
-          });
-        })
-      });
-  } catch (err) {
-    console.trace("Error => ", err.message);
-    res.status(500).json({
-      error: "Something bad"
-    });
-  }
-});
-
-
 // it returns info about a specific order
 router.get("/:orderID", async (req, res) => {
   const id = req.params.orderID;
 
   try {
+    mongoose.set('debug', true);
     const order = await Order
-      .find({ _id: id})
+      .find()
+      // .populate("product", "name")
       .select(" _id productId quantity");
 
     res.json({
@@ -115,7 +139,7 @@ router.delete("/:orderID", async (req, res) => {
       error: `Something bad with id - ${id}`
     })
   }
-  
+
 });
 
 module.exports = router;

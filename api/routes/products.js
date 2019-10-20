@@ -5,7 +5,7 @@ const mongoose  = require("mongoose");
 const Product   = require("../models/product.js");
 
 // list of all products
-router.get("/all", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const allProducts = await Product
       .find()
