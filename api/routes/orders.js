@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
     const docs = await Order
       .find()
       .select('_id productId quantity')
-      .populate('product', 'name');
+      .populate('productId', 'name');
 
     
     res.status(200).json({ 
@@ -82,15 +82,15 @@ router.post("/", async (req, res) => {
 
 
 // it returns info about a specific order
-router.get("/:orderID", async (req, res) => {
-  const id = req.params.orderID;
+router.get("/:orderId", async (req, res) => {
+  const id = req.params.orderId;
 
   try {
     mongoose.set('debug', true);
     const order = await Order
-      .find()
-      // .populate("product", "name")
-      .select(" _id productId quantity");
+      .find({ _id: id})
+      .select(" _id productId quantity")
+      .populate("productId", "name");
 
     res.json({
       id        : order[0]._id,
