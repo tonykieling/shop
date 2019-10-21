@@ -14,6 +14,7 @@
   # npm i morgan
   # npm i mongoose
   # npm i bcrypt * issues to install it due to need python2
+  # npm i jsonwebtoken
 
 * when using process.env, it means accessing node environment variables
 * when the port got stuck:

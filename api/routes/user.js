@@ -4,6 +4,7 @@ const router    = express.Router();
 const mongoose  = require("mongoose");
 const User      = require("../models/user.js");
 const bcrypt    = require("bcrypt");
+const jwt       = require("jsonwebtoken");
 
 
 // it returns all users
@@ -45,29 +46,34 @@ router.post("/signup", async (req, res) => {
 
   // it checks whether the email is already been used by an user account
   // if so, it returns an error message
-  const userExist = await User
-    .find({ email });
+  try {
+    const userExist = await User
+      .find({ email });
+  
+    if (userExist.length > 0)
+      return res.status(409).json({ error: `User <email: ${email}> alread exists.`});
+  } catch(err) {
+    console.trace("Error: ", err.message);
+    return res.status(409).json({
+      error: `<${email}> is invalid`
+    });
+  }
 
-  if (userExist.length > 0)
-    return res.status(409).json({ error: `User <email: ${email}> alread exists.`});
-
-
-  bcrypt.hash(req.body.password, 10, (err, hash) => {
+  bcrypt.hash(req.body.password, 10, async (err, hash) => {
     if (err)
       return res.json({
         error: "Something bad at the password process."
       });
     else {
-
       try{
-      const user = new User({
-        _id: new mongoose.Types.ObjectId(),
-        email,
-        password: hash
-      });
+        const user = new User({
+          _id: new mongoose.Types.ObjectId(),
+          email,
+          password: hash
+        });
 
-        user.save();
-        return res.status(201).json({ message: `User ${user.email} has been created.`});
+        await user.save();
+        res.status(201).json({ message: `User ${user.email} has been created.`});
 
       } catch(err) {
         console.trace("Error: ", err.message);
@@ -77,6 +83,45 @@ router.post("/signup", async (req, res) => {
       };
     }
   });
+});
+
+
+// it logs the user
+router.post("/login", async (req, res) => {
+  const email     = req.body.email;
+  const password  = req.body.password;
+
+  try {
+    const user = await User
+      .findOne({ email });
+
+    if (!user || user.length < 1)
+      return res.status(401).json({ error: "Authentication has failed"});
+    else {
+      bcrypt.compare(password, user.password, (err, result) => {
+        if (err)
+          return res.status(401).json({ error: "Authentication has failed"});
+
+        if (result){
+          const token = jwt.sign({
+            email,
+            userId: user._id
+          },
+          process.env.JWT_KEY,
+          {
+            expiresIn: process.env.JWT_expiration,
+          });
+
+          res.json({message: "success", user, token});
+        }
+        else
+          res.status(401).json({ error: "Authentication has failed"});
+      });
+    }
+  } catch(err) {
+    console.trace("Error: ", err.message);
+    res.status(401).json({ error: "Authentication has failed"});
+  }
 });
 
 

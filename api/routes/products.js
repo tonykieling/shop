@@ -1,6 +1,7 @@
 const express   = require("express");
 const router    = express.Router();
 
+const checkAuth = require("../middleware/check-auth.js")  // it calls the middleware which checks if user's autorized
 const mongoose  = require("mongoose");
 const Product   = require("../models/product.js");
 
@@ -22,7 +23,7 @@ router.get("/", async (req, res) => {
 
 
 // creation product function
-router.post("/", async (req, res) => {
+router.post("/", checkAuth, async (req, res) => {
   const product = new Product({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
@@ -62,7 +63,7 @@ router.get("/:productID", async (req, res) => {
 
 
 // it changes a specific product
-router.patch("/:productID", async (req, res) => {
+router.patch("/:productID", checkAuth, async (req, res) => {
   const id = req.params.productID;
 
   try {
@@ -95,7 +96,8 @@ router.patch("/:productID", async (req, res) => {
 
 
 // it deletes a specific product
-router.delete("/:productId", async (req, res) => {
+router.delete("/:productId", checkAuth, async (req, res) => {
+  console.log("inside DELETE PRODUCT");
   const productId = req.params.productId;
 
   const productToBeDeleted = await Product.findById(productId);
@@ -110,11 +112,11 @@ router.delete("/:productId", async (req, res) => {
 
       if (result.deletedCount)
         return res.status(200).json({
-          message: `Product ${id} has been deleted`
+          message: `Product ${productId} has been deleted`
         });
       else
         return res.json({
-          message: `Product ${id} has already been deleted`
+          message: `Product ${productId} has already been deleted`
         });
     } catch (err) {
       console.trace("Error => ", err.message);
