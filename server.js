@@ -7,6 +7,7 @@ const mongoose    = require("mongoose");
 
 const productRoutes   = require("./api/routes/products.js");
 const orderRoutes     = require("./api/routes/orders.js");
+const userRoutes      = require("./api/routes/user.js");
 
 mongoose.connect(
   `mongodb+srv://dbadmin:${process.env.DB_password}@node-rest-shop-9hzla.mongodb.net/test?retryWrites=true&w=majority`,
@@ -67,13 +68,16 @@ app.use("/products", productRoutes);
 // it calls orders routes - there the HTTP verb is gonna be checked and proceed accordingly
 app.use("/orders", orderRoutes);
 
+// it calls user routes - there the HTTP verb is gonna be checked and proceed accordingly
+app.use("/user", userRoutes);
+
 
 // the two below functions are designed to handle error
 // the first one will be called only if the server could not handle the request by /products or /orders middlewares
 // the second one is just to practice how to call a next function
 //   p.s. when dealing error message, it has to have 4 parameters (error, req, res, next)
 app.use((req, res, next) => {
-  const error = new Error("Not found!!");
+  const error = new Error("Route NOT found!!");
   error.status = 400;
   next(error);
 });

@@ -110,14 +110,6 @@ router.get("/:orderId", async (req, res) => {
 });
 
 
-// it updatess a specific order
-router.patch("/:orderID", (req, res) => {
-  console.log(`# orders/PATCH :orderId`);
-  const id = Number(req.params.orderID);
-  res.send(`Order ${id} has been updated`);
-});
-
-
 // it deletes a specific order
 router.delete("/:orderID", async (req, res) => {
   const id = req.params.orderID;

@@ -96,24 +96,32 @@ router.patch("/:productID", async (req, res) => {
 
 // it deletes a specific product
 router.delete("/:productId", async (req, res) => {
-  const id = req.params.productId;
-  
-  try {
-    const result = await Product.deleteOne({_id: id});
+  const productId = req.params.productId;
 
-    if (result.deletedCount)
-      return res.status(200).json({
-        message: `Product ${id} has been deleted`
-      });
-    else
-      return res.json({
-        message: `Product ${id} has already been deleted`
-      });
-  } catch (err) {
-    console.trace("Error => ", err.message);
-    res.status(404).json({
-      error: `Something bad with id - ${id}`
-    })
+  const productToBeDeleted = await Product.findById(productId);
+  if (!productToBeDeleted || productToBeDeleted.length < 1)
+    return res.status(409).json({
+      error: "Product not found"
+    });
+  
+  else {
+    try {
+      const result = await Product.deleteOne({_id: productId});
+
+      if (result.deletedCount)
+        return res.status(200).json({
+          message: `Product ${id} has been deleted`
+        });
+      else
+        return res.json({
+          message: `Product ${id} has already been deleted`
+        });
+    } catch (err) {
+      console.trace("Error => ", err.message);
+      res.status(404).json({
+        error: `Something bad with id - ${id}`
+      })
+    }
   }
 });
 
