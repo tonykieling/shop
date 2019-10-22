@@ -18,16 +18,6 @@ mongoose.connect(
   }
 );
 
-// const MongoClient = require('mongodb').MongoClient;
-// const uri = "mongodb+srv://dbadmin:<password>@node-rest-shop-9hzla.mongodb.net/test?retryWrites=true&w=majority";
-// const client = new MongoClient(uri, { useNewUrlParser: true });
-// client.connect(err => {
-//   const collection = client.db("test").collection("devices");
-//   // perform actions on the collection object
-//   client.close();
-// });
-
-
 
 // it logs the actions on the screen
 app.use(morgan("dev"));
