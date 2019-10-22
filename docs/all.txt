@@ -1,3 +1,5 @@
+based on https://www.youtube.com/watch?v=0oXYLzuucwE
+
 1- create the directory to the system
 2- create the project
   # npm init -y

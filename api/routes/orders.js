@@ -1,12 +1,8 @@
 const express           = require("express");
 const router            = express.Router();
-// const mongoose          = require("mongoose");
 
-// const Order             = require("../models/order.js");
-// const Product           = require("../models/product.js");
 const OrdersController  = require("../controllers/orders.js");
-
-const checkAuth = require("../middleware/check-auth.js")  // it calls the middleware which checks if user's authorized
+const checkAuth         = require("../middleware/check-auth.js")  // it calls the middleware which checks if user's authorized
 
 // it returns info about all orders
 router.get("/", checkAuth, OrdersController.get_all);
