@@ -4,7 +4,9 @@ This project is aimed to practice:
 - Javascript/Node
 - Express, middleware and routes
 - MongoDB and Mongoose
-- Authentication, Bcrypt and JWT.  
+- Authentication, Bcrypt and JWT.   
+
+It was based on https://www.youtube.com/watch?v=0oXYLzuucwE.
 
 Basically it is composed by:  
 - server.js - it is the main file that hosts the server (listening at 3333 port).
@@ -36,12 +38,12 @@ It is backend and database parts of a system which is possible
   - bcrypt
   - jsonwebtoken
 
-  *p.s.1: the database used is hosted at Atlas MongoDB*  
-  *p.s.2: the has ta have the following variables*  
-    "DB_password" - which is the db password  
+  *p.s.1: the database used is MongoDB and its connections settings are based on nodemon.js file.*  
+  *p.s.2: the nodemon.js file has the following variables.*  
+    "URI_DB" - which is the database path with password within it  
     "JWT_KEY" - the key used by JWT  
     "JWT_expiration" - JWT expiration time  
-  *p.s.3: the client side was executed using Postman*
+  *p.s.3: the client side was executed using Postman.*
 
   **How to install:**  
   `# git clone https://github.com/tonykieling/shop.git .`  

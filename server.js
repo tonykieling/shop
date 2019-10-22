@@ -9,14 +9,11 @@ const productRoutes   = require("./api/routes/products.js");
 const orderRoutes     = require("./api/routes/orders.js");
 const userRoutes      = require("./api/routes/user.js");
 
-mongoose.connect(
-  `mongodb+srv://dbadmin:${process.env.DB_password}@node-rest-shop-9hzla.mongodb.net/test?retryWrites=true&w=majority`,
-  {
-    // useMongoClient: true
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  }
-);
+
+// connection to the database regarding the environment variable URI
+mongoose.connect(process.env.URI, { 
+  useNewUrlParser: true,
+  useUnifiedTopology: true });
 
 
 // it logs the actions on the screen
@@ -63,7 +60,7 @@ app.use("/user", userRoutes);
 
 
 // the two below functions are designed to handle error
-// the first one will be called only if the server could not handle the request by /products or /orders middlewares
+// the first one will be called only if the server could not handle the request by /products. /orders or /user middlewares
 // the second one is just to practice how to call a next function
 //   p.s. when dealing error message, it has to have 4 parameters (error, req, res, next)
 app.use((req, res, next) => {
