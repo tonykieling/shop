@@ -113,7 +113,8 @@ modify_product = async (req, res) => {
   const id = req.params.productId;
 
   try {
-    const result = await Product.updateOne({
+    const result = await Product
+    .updateOne({
        _id: id
       }, {
         $set: {

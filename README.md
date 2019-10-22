@@ -4,7 +4,17 @@ This project is aimed to practice:
 - Javascript/Node
 - Express, middleware and routes
 - MongoDB and Mongoose
-- Authentication, Bcrypt and JWT.
+- Authentication, Bcrypt and JWT.  
+
+Basically it is composed by:  
+- server.js - it is the main file that hosts the server (listening at 3333 port).
+- package.json - it holds the dependencies and configurations.
+- nodemon.json - this file can be used to set the environment variables.
+- api directory has  
+a) controllers: resposanble for the logic implementation  
+b) middleware: contains the function to protect the routes  
+c) models: has the database models  
+d) routes: aggregates the set of routes for a particular context, such as user, product and orders.  
 
 It is backend and database parts of a system which is possible
 - Signup a user
@@ -17,7 +27,7 @@ It is backend and database parts of a system which is possible
 - Check, and
 - Delete them
 
-Dependencies:
+**Dependencies:**
   - express
   - nodemon
   - body-parser
@@ -27,13 +37,18 @@ Dependencies:
   - jsonwebtoken
 
   *p.s.1: the database used is hosted at Atlas MongoDB*  
-  *p.s.2: the client side was executed using Postman*
+  *p.s.2: the has ta have the following variables*  
+    "DB_password" - which is the db password  
+    "JWT_KEY" - the key used by JWT  
+    "JWT_expiration" - JWT expiration time  
+  *p.s.3: the client side was executed using Postman*
 
-  How to install:  
+  **How to install:**  
   `# git clone https://github.com/tonykieling/shop.git .`  
   `# npm i`  
   `# npm start`    
 
+  **How to use:**  
   On Postman, use http://localhost:3333 plus HTTP methods 
   - GET:  
   /             => It is the service's root  
