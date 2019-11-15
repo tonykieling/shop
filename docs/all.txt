@@ -48,3 +48,4 @@ Mongoose provides a straight-forward, schema-based solution to model your applic
 * unique does not validate whether a specif property exists, but it allows performance to the database which will create an index for that field/property
 * match property can be used along side Regular Expressions (ReGex) and format a particular format, such as email
 
+10- variable environment are set on nodemon.json

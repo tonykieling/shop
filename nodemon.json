@@ -1,6 +1,6 @@
 {
   "env": {
-    "URI_DB": "mongodb://localhost:27017/shop",
+    "URI_DB": "mongodb+srv://dbadmin:ReallyVeryStrongP@55d@node-rest-shop-9hzla.mongodb.net/test?retryWrites=true&w=majority",
     "JWT_KEY": "SecretKey789",
     "JWT_expiration": "10h"
   }

@@ -11,7 +11,8 @@ const userRoutes      = require("./api/routes/user.js");
 
 
 // connection to the database regarding the environment variable URI
-mongoose.connect(process.env.URI, { 
+console.log("process.env.URI_DB", process.env.URI_DB);
+mongoose.connect(process.env.URI_DB, { 
   useNewUrlParser: true,
   useUnifiedTopology: true });
 
